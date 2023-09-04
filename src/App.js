@@ -1,23 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import api from "./api.js";
 
 function App() {
+
+  const [cep, setCep] = useState('')
+  const [endere, setEndere] = useState('')
+
+
+  async function buscar() {
+
+    if (cep === '') {
+      alert('Preencha algum cep!')
+      return
+    }
+
+    try {
+      const response = await api.get(`${cep}/json`)
+      setEndere(response.data)
+      setCep('')
+    } catch {
+      alert('Erro! Preencha um CEP valido!')
+      setCep('')
+    }
+
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1 className="title">Buscador CEP</h1>
+
+      <div className="input">
+        <input
+        type="text"
+        placeholder="Digite o CEP..."
+        value={cep}
+        onChange={(event) => setCep(event.target.value)}
+        />
+        <button className="botao" onClick={buscar}><img src="https://cdn-icons-png.flaticon.com/512/64/64673.png" className="botao"/></button>
+      </div>
+
+      {Object.keys(endere).length > 0 && (
+        <main className="main">
+
+          <h2>CEP: {endere.cep}</h2>
+
+          <span>{endere.logradouro}</span>
+          <span>{endere.complemento}</span>
+          <span>{endere.bairro}</span>
+          <span>{endere.localidade} - {endere.uf}</span>
+
+        </main>
+      )}
+      
     </div>
   );
 }
